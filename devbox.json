@@ -12,7 +12,7 @@
   ],
   "shell": {
     "init_hook": [
-      "echo 'Welcome to devbox!' > /dev/null",
+      "rustup default 1.77.0 ",
       "alias ls='ls --color'"
     ],
     "scripts": {

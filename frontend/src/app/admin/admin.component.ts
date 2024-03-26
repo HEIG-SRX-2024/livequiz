@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { ConnectionService, Result, ResultState } from '../services/connection.service';
 import { MatListModule, MatSelectionList } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
 import { Buffer } from 'buffer';
 import { Questionnaire, QuestionnaireService } from '../services/questionnaire.service';
@@ -20,7 +20,9 @@ import { environment } from '../../environments/environment';
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class AdminComponent {
+export class AdminComponent implements AfterViewInit {
+  @ViewChild('toggleEditAllowed') toggleEditAllowed!: MatSlideToggle;
+  @ViewChild('toggleShowResults') toggleShowResults!: MatSlideToggle;
   users: Result[] = [];
   displayedColumns: number[] = [];
   showResults = false;
@@ -32,18 +34,22 @@ export class AdminComponent {
 
   constructor(private connection: ConnectionService, private qservice: QuestionnaireService,
     private user: UserService) {
-    qservice.loaded.subscribe((q) => {
+  }
+  async ngAfterViewInit() {
+    this.qservice.loaded.subscribe((q) => {
       this.questionnaire = q;
       this.update();
     });
-    connection.showResults.subscribe((show) => {
+    this.connection.showResults.subscribe((show) => {
       this.showResults = show;
+      this.toggleShowResults.setDisabledState(false);
       this.updateSelectedClass();
     });
-    connection.editAllowed.subscribe((edit) => {
+    this.connection.editAllowed.subscribe((edit) => {
       this.editAllowed = edit;
+      this.toggleEditAllowed!.setDisabledState(false);
     });
-    connection.answersHash.subscribe(() => {
+    this.connection.answersHash.subscribe(() => {
       this.update();
     })
   }
@@ -59,7 +65,7 @@ export class AdminComponent {
     this.displayedColumns = this.questionnaire.questions.map((_, i) => i);
   }
 
-  async updateQuestionnaire(){
+  async updateQuestionnaire() {
     await this.connection.updateQuestionnaire(this.user.secret);
   }
 
@@ -96,13 +102,15 @@ export class AdminComponent {
   }
 
   editAllowedUpdate(event: MatSlideToggleChange) {
-    this.editAllowed = event.checked;
-    this.connection.setEditAllowed(this.user.secret, this.editAllowed);
+    this.connection.setEditAllowed(this.user.secret, event.checked);
+    event.source.checked = this.connection.editAllowed.value;
+    event.source.disabled = true;
   }
 
   showResultsUpdate(event: MatSlideToggleChange) {
-    this.showResults = event.checked;
-    this.connection.setShowAnswers(this.user.secret, this.showResults);
+    this.connection.setShowAnswers(this.user.secret, event.checked);
+    event.source.checked = this.connection.showResults.value;
+    event.source.disabled = true;
     this.updateSelectedClass();
   }
 }

@@ -33,6 +33,9 @@ The admin view shows all students, and what they answered already.
 
 # CHANGELOG
 
+2024-03-26:
+- Make toggles in admin view reflect what is set in the backend
+
 2024-03-21:
 - don't reset choices in multi
 - correction: add number of answers for choices

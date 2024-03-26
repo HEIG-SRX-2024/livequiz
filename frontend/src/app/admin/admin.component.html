@@ -6,13 +6,15 @@
 
 <h3>Questionnaire title is {{title}}</h3>
 
+<mat-slide-toggle (change)="showResultsUpdate($event)" [checked]="showResults" style="margin: 0 1em 1em;"
+  #toggleShowResults>
+  Show Results
+</mat-slide-toggle>
+<mat-slide-toggle ngModel (change)="editAllowedUpdate($event)" [checked]="editAllowed" style="margin: 0 1em 1em;"
+  #toggleEditAllowed>
+  Editing Allowed
+</mat-slide-toggle>
 <div *ngIf="users.length > 0">
-  <mat-slide-toggle (change)="showResultsUpdate($event)" [checked]="showResults" style="margin: 0 1em 1em;">
-    Show Results
-  </mat-slide-toggle>
-  <mat-slide-toggle (change)="editAllowedUpdate($event)" [checked]="editAllowed" style="margin: 0 1em 1em;">
-    Editing Allowed
-  </mat-slide-toggle>
   <table style="width: 100%">
     <tr>
       <th style="width: 10em;">Name</th>
